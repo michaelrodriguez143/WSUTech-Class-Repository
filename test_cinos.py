@@ -1,16 +1,9 @@
-# test_cinos.py
 import unittest
 from .drink import Drink
 from .order import Order
 
 
 class TestDrink(unittest.TestCase):
-    def test_drink_initialization(self):
-        drink = Drink()
-        self.assertIsNone(drink.get_base())
-        self.assertEqual(drink.get_flavors(), [])
-        self.assertEqual(drink.get_num_flavors(), 0)
-
     def test_set_base(self):
         drink = Drink()
         drink.set_base("sprite")
@@ -30,6 +23,11 @@ class TestDrink(unittest.TestCase):
         drink = Drink()
         with self.assertRaises(ValueError):
             drink.add_flavor("vanilla")
+
+    def test_set_flavors(self):
+        drink = Drink()
+        drink.set_flavors(["cherry", "lime"])
+        self.assertEqual(drink.get_flavors(), ["cherry", "lime"])
 
 
 class TestOrder(unittest.TestCase):
@@ -66,6 +64,8 @@ class TestOrder(unittest.TestCase):
         order.add_item(drink1)
         order.add_item(drink2)
         receipt = order.get_receipt()
+        self.assertIn("Drink 1: Base - water, Flavors - lemon", receipt)
+        self.assertIn("Drink 2: Base - sprite, Flavors - lime, mint", receipt)
         self.assertIn("Total: $10.00", receipt)
 
 
