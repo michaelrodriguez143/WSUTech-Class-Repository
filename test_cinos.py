@@ -1,5 +1,6 @@
 import unittest
 from .drink import Drink
+from .food import Food
 from .order import Order
 
 
@@ -8,74 +9,110 @@ class TestDrink(unittest.TestCase):
     Test case class for the Drink class. This class tests the functionality of all methods
     provided by the Drink class, including base and flavor manipulation.
     """
+
     def test_set_base(self):
-        """
-        Test setting a valid base for a drink.
-        """
+        """Test setting a valid base for a drink."""
         drink = Drink()
         drink.set_base("sprite")
         self.assertEqual(drink.get_base(), "sprite")
 
     def test_add_flavor(self):
-        """
-        Test adding a valid flavor to a drink.
-        """
+        """Test adding a valid flavor to a drink."""
         drink = Drink()
         drink.add_flavor("lemon")
         self.assertIn("lemon", drink.get_flavors())
 
     def test_invalid_base(self):
-        """
-        Test setting an invalid base for a drink. This should raise a ValueError.
-        """
+        """Test setting an invalid base for a drink. This should raise a ValueError."""
         drink = Drink()
         with self.assertRaises(ValueError):
             drink.set_base("cola")
 
     def test_invalid_flavor(self):
-        """
-        Test adding an invalid flavor to a drink. This should raise a ValueError.
-        """
+        """Test adding an invalid flavor to a drink. This should raise a ValueError."""
         drink = Drink()
         with self.assertRaises(ValueError):
             drink.add_flavor("vanilla")
 
     def test_set_flavors(self):
-        """
-        Test setting multiple flavors for a drink using the set_flavors method.
-        """
+        """Test setting multiple flavors for a drink using the set_flavors method."""
         drink = Drink()
         drink.set_flavors(["cherry", "lime"])
         self.assertEqual(drink.get_flavors(), ["cherry", "lime"])
 
 
+class TestFood(unittest.TestCase):
+    """
+    Test case class for the Food class. This class tests the functionality of all methods
+    provided by the Food class, including type, topping manipulation, and pricing.
+    """
+
+    def test_set_type(self):
+        """Test setting a valid food type."""
+        food = Food()
+        food.set_type("hotdog")
+        self.assertEqual(food.get_type(), "hotdog")
+
+    def test_invalid_type(self):
+        """Test setting an invalid food type. This should raise a ValueError."""
+        food = Food()
+        with self.assertRaises(ValueError):
+            food.set_type("burger")
+
+    def test_add_topping(self):
+        """Test adding a valid topping to a food item."""
+        food = Food()
+        food.set_type("french fries")
+        food.add_topping("ketchup")
+        self.assertIn("ketchup", food.get_toppings())
+
+    def test_invalid_topping(self):
+        """Test adding an invalid topping to a food item. This should raise a ValueError."""
+        food = Food()
+        food.set_type("nacho chips")
+        with self.assertRaises(ValueError):
+            food.add_topping("salsa")
+
+    def test_get_price(self):
+        """Test calculating the price of a food item with toppings."""
+        food = Food()
+        food.set_type("ice cream")
+        food.add_topping("caramel sauce")
+        food.add_topping("chocolate sauce")
+        self.assertAlmostEqual(food.get_price(), 4.0)  # Base price + toppings
+
+
 class TestOrder(unittest.TestCase):
     """
     Test case class for the Order class. This class tests the functionality of all methods
-    provided by the Order class, including adding/removing drinks and calculating totals.
+    provided by the Order class, including adding/removing items, calculating totals, and generating receipts.
     """
+
     def test_order_initialization(self):
-        """
-        Test the initialization of an empty order.
-        """ 
+        """Test the initialization of an empty order."""
         order = Order()
         self.assertEqual(order.get_items(), [])
         self.assertEqual(order.get_total(), 0.0)
 
-    def test_add_item(self):
-        """
-        Test adding a drink to the order.
-        """
+    def test_add_drink_item(self):
+        """Test adding a drink to the order."""
         order = Order()
         drink = Drink()
         drink.set_base("sprite")
         order.add_item(drink)
         self.assertEqual(order.get_num_items(), 1)
 
+    def test_add_food_item(self):
+        """Test adding a food item to the order."""
+        order = Order()
+        food = Food()
+        food.set_type("hotdog")
+        food.add_topping("ketchup")
+        order.add_item(food)
+        self.assertEqual(order.get_num_items(), 1)
+
     def test_remove_item(self):
-        """
-        Test removing a drink from the order by index.
-        """
+        """Test removing an item (drink or food) from the order by index."""
         order = Order()
         drink = Drink()
         drink.set_base("sprite")
@@ -83,25 +120,41 @@ class TestOrder(unittest.TestCase):
         order.remove_item(0)
         self.assertEqual(order.get_num_items(), 0)
 
-    def test_get_receipt(self):
-        """
-        Test generating a receipt for an order
-        """
+    def test_get_total(self):
+        """Test calculating the total price of an order with drinks and food."""
         order = Order()
-        drink1 = Drink()
-        drink1.set_base("water")
-        drink1.add_flavor("lemon")
 
-        drink2 = Drink()
-        drink2.set_base("sprite")
-        drink2.set_flavors(["lime", "mint"])
+        drink = Drink()
+        drink.set_base("sprite")
+        drink.add_flavor("lemon")
+        order.add_item(drink)
 
-        order.add_item(drink1)
-        order.add_item(drink2)
+        food = Food()
+        food.set_type("french fries")
+        food.add_topping("ketchup")
+        food.add_topping("bacon bits")
+        order.add_item(food)
+
+        self.assertAlmostEqual(order.get_total(), 3.45)  # Drink + Food price
+
+    def test_get_receipt(self):
+        """Test generating a receipt for an order with drinks and food."""
+        order = Order()
+
+        drink = Drink()
+        drink.set_base("sprite")
+        drink.add_flavor("lime")
+        order.add_item(drink)
+
+        food = Food()
+        food.set_type("onion rings")
+        food.add_topping("chili")
+        order.add_item(food)
+
         receipt = order.get_receipt()
-        self.assertIn("Drink 1: Base - water, Flavors - lemon", receipt)
-        self.assertIn("Drink 2: Base - sprite, Flavors - lime, mint", receipt)
-        self.assertIn("Total: $10.00", receipt)
+        self.assertIn("Drink 1: Base - sprite, Flavors - lime", receipt)
+        self.assertIn("Food 2: Type - onion rings, Toppings - chili", receipt)
+        self.assertIn("Total: $3.35", receipt)
 
 
 if __name__ == "__main__":
