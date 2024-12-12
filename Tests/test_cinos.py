@@ -1,8 +1,8 @@
 import unittest
-from .drink import Drink
-from .food import Food
-from .order import Order
-from .icestorm import IceStorm
+from ..API.drink import Drink
+from ..API.food import Food
+from ..API.order import Order
+from ..API.icestorm import IceStorm
 
 
 class TestDrink(unittest.TestCase):
