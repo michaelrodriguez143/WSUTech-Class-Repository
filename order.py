@@ -1,5 +1,6 @@
 from .drink import Drink
 from .food import Food
+from .icestorm import IceStorm
 
 class Order:
     """
@@ -58,23 +59,27 @@ class Order:
         """
         return sum(item.get_price() for item in self._items)
 
-    def get_receipt(self):
-        """
-        Generates a receipt for the order.
+def get_receipt(self):
+    """
+    Generates a receipt for the order.
 
-        Returns:
-            str: A formatted receipt including all items and the total price.
-        """
-        receipt = []
-        for index, item in enumerate(self._items):
-            if isinstance(item, Drink):
-                receipt.append(
-                    f"Drink {index + 1}: Base - {item.get_base()}, Flavors - {', '.join(item.get_flavors())}, Total: ${item.get_price():.2f}"
-                )
-            elif isinstance(item, Food):
-                receipt.append(
-                    f"Food {index + 1}: Type - {item.get_type()}, Toppings - {', '.join(item.get_toppings())}, Total: ${item.get_price():.2f}"
-                )
-
-        receipt.append(f"Total: ${self.get_total():.2f}")
-        return "\n".join(receipt)
+    Returns:
+        str: A formatted receipt including all items and the total price.
+    """
+    receipt = []
+    for index, item in enumerate(self._items):
+        if isinstance(item, Drink):
+            receipt.append(
+                f"Drink {index + 1}: Base - {item.get_base()}, Flavors - {', '.join(item.get_flavors())}, Total: ${item.get_price():.2f}"
+            )
+        elif isinstance(item, Food):
+            receipt.append(
+                f"Food {index + 1}: Type - {item.get_type()}, Toppings - {', '.join(item.get_toppings())}, Total: ${item.get_price():.2f}"
+            )
+        elif isinstance(item, IceStorm):
+            receipt.append(
+                f"Ice Storm {index + 1}: Flavor - {item.get_flavor()}, Toppings - {', '.join(item.get_toppings())}, Total: ${item.get_total():.2f}"
+            )
+    
+    receipt.append(f"Grand Total: ${self.get_total():.2f}")
+    return "\n".join(receipt)

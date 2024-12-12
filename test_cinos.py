@@ -2,6 +2,7 @@ import unittest
 from .drink import Drink
 from .food import Food
 from .order import Order
+from .icestorm import IceStorm
 
 
 class TestDrink(unittest.TestCase):
@@ -155,6 +156,56 @@ class TestOrder(unittest.TestCase):
         self.assertIn("Drink 1: Base - sprite, Flavors - lime", receipt)
         self.assertIn("Food 2: Type - onion rings, Toppings - chili", receipt)
         self.assertIn("Total: $3.35", receipt)
+
+class TestIceStorm(unittest.TestCase):
+    """Unit tests for the IceStorm class."""
+
+    def test_initialization(self):
+        """Test the initialization of an Ice Storm."""
+        storm = IceStorm()
+        self.assertIsNone(storm.get_flavor())
+        self.assertEqual(storm.get_toppings(), [])
+        self.assertEqual(storm.get_total(), 0.0)
+
+    def test_add_flavor(self):
+        """Test adding a valid flavor to an Ice Storm."""
+        storm = IceStorm()
+        storm.add_flavor("Chocolate")
+        self.assertEqual(storm.get_flavor(), "Chocolate")
+
+    def test_invalid_flavor(self):
+        """Test adding an invalid flavor raises a ValueError."""
+        storm = IceStorm()
+        with self.assertRaises(ValueError):
+            storm.add_flavor("Strawberry")
+
+    def test_add_topping(self):
+        """Test adding a valid topping to an Ice Storm."""
+        storm = IceStorm()
+        storm.add_topping("Cherry")
+        self.assertIn("Cherry", storm.get_toppings())
+
+    def test_invalid_topping(self):
+        """Test adding an invalid topping raises a ValueError."""
+        storm = IceStorm()
+        with self.assertRaises(ValueError):
+            storm.add_topping("Sprinkles")
+
+    def test_get_total(self):
+        """Test calculating the total price of an Ice Storm."""
+        storm = IceStorm()
+        storm.add_flavor("Chocolate")
+        storm.add_topping("Cherry")
+        storm.add_topping("Caramel Sauce")
+        self.assertAlmostEqual(storm.get_total(), 3.50)
+
+    def test_str_representation(self):
+        """Test the string representation of an Ice Storm."""
+        storm = IceStorm()
+        storm.add_flavor("S'more")
+        storm.add_topping("Chocolate Sauce")
+        self.assertIn("S'more", str(storm))
+        self.assertIn("Chocolate Sauce", str(storm))
 
 
 if __name__ == "__main__":
